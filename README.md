@@ -41,15 +41,10 @@ Registration Mode - Stores a new 10-digit Student ID on an RFID card.
 
 Reset Mode - Wipes or updates stored RFID data.
 
-Serial Commands:
+Serial Commands :
 
-Command \t              Action
+![image](https://github.com/user-attachments/assets/0ecdc36a-a969-4d63-8ec8-fe2c3fac9abe)
 
-mfr-auth \t              Switch to Authentication Mode
-
-mfr-sid 1234567890     Register Student ID 1234567890 to a card
-
-mfr-R                  Switch to Reset Mode
 
 Installation & Setup : 
 
