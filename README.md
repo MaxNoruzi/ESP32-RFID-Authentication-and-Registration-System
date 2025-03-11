@@ -43,9 +43,9 @@ Reset Mode - Wipes or updates stored RFID data.
 
 Serial Commands:
 
-Command                Action
+Command \t              Action
 
-mfr-auth               Switch to Authentication Mode
+mfr-auth \t              Switch to Authentication Mode
 
 mfr-sid 1234567890     Register Student ID 1234567890 to a card
 
