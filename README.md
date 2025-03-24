@@ -1,58 +1,94 @@
-Project Overview
+# 🎓 RFID Student ID Authentication System (ESP32 + MFRC522)
 
-This project is an RFID-based authentication system using an ESP32 and MFRC522 RFID module. It allows users to:
+This Arduino-based project uses an **ESP32** and **MFRC522 RFID reader** to authenticate and register student IDs to RFID cards. It supports multiple operational modes like standby, authentication, registration, and reset via serial commands. Each RFID card stores a compressed 10-digit student ID using 4-bit encoding per digit.
 
-Scan RFID cards for authentication
+---
 
-Register new RFID cards with student IDs
+## 🛠 Features
 
-Reset or update RFID card data
+- ✅ **Multiple Operating Modes**
+  - `Standby`: Idle listening for commands
+  - `Authentication`: Scan RFID cards and verify IDs
+  - `Registration`: Write new student IDs to RFID cards
+  - `Reset`: Clear ID data from RFID cards
 
-Switch between different modes via Serial Monitor
+- 🆔 **Hardcoded Access Control**
+  - Matches scanned card IDs against a predefined whitelist
 
-Features
+- 💾 **4-bit Data Packing**
+  - Each student ID digit is compressed into 4 bits to store two digits per byte efficiently
 
-✅ RFID Card Authentication - Checks if the scanned card is in a list of allowed IDs.
-✅ Card Registration - Stores a student ID onto an RFID card.
-✅ Reset Mode - Clears or modifies the stored card data.
-✅ Mode Selection via Serial Commands - Users can control functionality via a terminal.
+- 🕹️ **Serial-Based Mode Switching**
+  - Commands such as `mfr-auth`, `mfr-sid<id>`, `mfr-R`, etc., control system modes via the Serial Monitor
 
-Components & Wiring :
+---
 
-![image](https://github.com/user-attachments/assets/1d55c2bf-716b-488e-a7f8-92a3882c6277)
+## ⚙️ Hardware
 
-How It Works
+- ESP32 development board  
+- MFRC522 RFID module  
+- MIFARE Classic 1K RFID cards  
+- Jumper wires and breadboard
 
-1️⃣ Setup Phase
+---
 
-Initializes SPI interface for communication.
+## 🔌 Pin Configuration
 
-Initializes MFRC522 RFID reader.
+| MFRC522 Pin | ESP32 GPIO |
+|-------------|------------|
+| RST         | GPIO 0     |
+| SDA (SS)    | GPIO 5     |
+| MOSI        | GPIO 23    |
+| MISO        | GPIO 19    |
+| SCK         | GPIO 18    |
+| GND         | GND        |
+| 3.3V        | 3.3V       |
 
-Loads a hardcoded list of allowed IDs.
+> Make sure to use **3.3V** only, as MFRC522 modules are not 5V-tolerant.
 
-2️⃣ Operating Modes
+---
 
-Standby Mode - Listens for Serial commands.
+## 🧪 Serial Commands
 
-Authentication Mode - Reads a card and checks if it's allowed.
+- `mfr-auth`: Enter **Authentication Mode**
+- `mfr-sid<10-digit-ID>`: Enter **Registration Mode** with student ID
+- `mfr-R`: Enter **Reset Mode**
+- `mfr-r`: Return to **Standby Mode**
 
-Registration Mode - Stores a new 10-digit Student ID on an RFID card.
+---
 
-Reset Mode - Wipes or updates stored RFID data.
+## 📦 Code Structure
 
-Serial Commands :
+- `STANDBY`: Waits for user input
+- `AUTHENTICATION`: Reads card, decodes student ID, checks against allowed list
+- `REGISTRATION`: Encodes 10-digit ID into RFID card (2 digits per byte)
+- `RESET`: Clears card data by writing zeroed bytes
 
-![image](https://github.com/user-attachments/assets/0ecdc36a-a969-4d63-8ec8-fe2c3fac9abe)
+---
 
+## 📂 How it Works
 
-Installation & Setup : 
+1. **Student ID Storage**:
+   - 10-digit IDs are compressed using 4-bit encoding.
+   - Stored on block 2 of the RFID card.
 
-Flash the code to an ESP32.
+2. **Authentication**:
+   - Reads the same block, decompresses it back into the original ID.
+   - Compares with `allowedIDs[]`.
 
-Connect the RFID module as per the wiring table.
+3. **Security**:
+   - Uses default key `0xFF 0xFF 0xFF 0xFF 0xFF 0xFF` for authentication.
+   - Cards are halted after each operation for safe communication.
 
-Open the Serial Monitor (9600 baud rate).
+---
 
-Scan an RFID card or send Serial commands to interact.
+## 🧠 Example
 
+```bash
+> mfr-sid9922762026
+# Enters registration mode
+# Scan a new RFID card to write the ID
+
+> mfr-auth
+# Scan card
+# Matches and prints "id found" or "id not found"
